@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Flask
+instance/
+.webassets-cache
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+database/
+
+# Machine Learning Models (optional - include if <100MB)
+*.pkl
+*.h5
+*.model
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+
+# Scraped data cache (optional)
+scraped_data/
+cache/
+
+# Node modules (if using npm for any reason)
+node_modules/
+
+# Temporary files
+*.tmp
+*.bak

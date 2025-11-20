@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Products - Farmer's Portal{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Farming Products</h1>
+            <p class="text-gray-600">Browse pesticides and equipment with prices</p>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="flex justify-center mb-8 space-x-4">
+            <a href="/products?type=pesticides" 
+               class="px-6 py-3 rounded-lg font-semibold {% if product_type == 'pesticides' %}bg-green-600 text-white{% else %}bg-white text-gray-700 hover:bg-gray-100{% endif %}">
+                Pesticides
+            </a>
+            <a href="/products?type=equipment" 
+               class="px-6 py-3 rounded-lg font-semibold {% if product_type == 'equipment' %}bg-green-600 text-white{% else %}bg-white text-gray-700 hover:bg-gray-100{% endif %}">
+                Equipment
+            </a>
+        </div>
+        
+        <!-- Scrape Button -->
+        <div class="text-center mb-8">
+            <button id="scrape-products-btn" class="btn-primary text-white px-6 py-2 rounded-lg font-semibold">
+                <span id="scrape-text">Refresh Products</span>
+                <span id="scrape-loading" class="hidden">Scraping...</span>
+            </button>
+        </div>
+        
+        <!-- Products Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% if products %}
+                {% for product in products %}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                    {% if product['image_url'] %}
+                    <img src="{{ product['image_url'] }}" alt="{{ product['name'] }}" class="w-full h-48 object-cover">
+                    {% else %}
+                    <div class="w-full h-48 bg-gradient-to-r from-purple-400 to-pink-500"></div>
+                    {% endif %}
+                    
+                    <div class="p-4">
+                        {% if product['category'] %}
+                        <span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full mb-2">
+                            {{ product['category'] }}
+                        </span>
+                        {% endif %}
+                        
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
+                            {{ product['name'] }}
+                        </h3>
+                        
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                            {{ product['description'] or 'No description available' }}
+                        </p>
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-xl font-bold text-green-600">{{ product['price'] }}</span>
+                            {% if product['product_url'] %}
+                            <a href="{{ product['product_url'] }}" target="_blank" class="text-purple-600 hover:text-purple-700 text-sm font-semibold">
+                                View →
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-500 text-lg">No products found. Click "Refresh Products" to scrape latest products.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="flex justify-center mt-12 space-x-2">
+            {% if page > 1 %}
+            <a href="/products?type={{ product_type }}&page={{ page - 1 }}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Previous</a>
+            {% endif %}
+            
+            {% for p in range(1, total_pages + 1) %}
+                {% if p == page %}
+                <span class="px-4 py-2 bg-green-600 text-white rounded-lg">{{ p }}</span>
+                {% else %}
+                <a href="/products?type={{ product_type }}&page={{ p }}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">{{ p }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page < total_pages %}
+            <a href="/products?type={{ product_type }}&page={{ page + 1 }}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+    document.getElementById('scrape-products-btn').addEventListener('click', async function() {
+        const btn = this;
+        const text = document.getElementById('scrape-text');
+        const loading = document.getElementById('scrape-loading');
+        
+        btn.disabled = true;
+        text.classList.add('hidden');
+        loading.classList.remove('hidden');
+        
+        try {
+            const response = await fetch('/api/scrape/products', { method: 'POST' });
+            const data = await response.json();
+            
+            if (data.success) {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        } catch (error) {
+            alert('Error scraping products: ' + error.message);
+        } finally {
+            btn.disabled = false;
+            text.classList.remove('hidden');
+            loading.classList.add('hidden');
+        }
+    });
+</script>
+{% endblock %}

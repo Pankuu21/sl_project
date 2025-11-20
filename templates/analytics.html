@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics Dashboard - Farmer's Portal{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Analytics Dashboard</h1>
+            <p class="text-gray-600">Interactive visualizations and crop insights</p>
+        </div>
+        
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Chart 1: Crop Recommendation Distribution -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Crop Recommendation Distribution</h3>
+                <div id="crop-distribution-chart"></div>
+            </div>
+            
+            <!-- Chart 2: Nutrient Requirements by Crop -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Average Nutrient Requirements (N-P-K)</h3>
+                <div id="nutrient-chart"></div>
+            </div>
+            
+            <!-- Chart 3: Temperature vs Rainfall -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Temperature vs Rainfall by Crop</h3>
+                <div id="temp-rainfall-chart"></div>
+            </div>
+            
+            <!-- Chart 4: pH Distribution -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">pH Level Distribution by Crop</h3>
+                <div id="ph-chart"></div>
+            </div>
+        </div>
+        
+        <!-- Recent Predictions Table -->
+        <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Recent Predictions</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">N</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">P</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">K</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Temp</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">pH</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Predicted Crop</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% if recent_predictions %}
+                            {% for pred in recent_predictions %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm text-gray-600">{{ pred['prediction_date'][:10] }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-800">{{ pred['N'] }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-800">{{ pred['P'] }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-800">{{ pred['K'] }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-800">{{ "%.1f"|format(pred['temperature']) }}°C</td>
+                                <td class="px-4 py-3 text-sm text-gray-800">{{ "%.1f"|format(pred['ph']) }}</td>
+                                <td class="px-4 py-3 text-sm font-semibold text-green-600">{{ pred['predicted_crop'] }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-800">{{ "%.1f"|format(pred['confidence']) }}%</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="px-4 py-8 text-center text-gray-500">
+                                    No predictions yet. Try the crop recommendation tool!
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/visualization.js') }}"></script>
+{% endblock %}

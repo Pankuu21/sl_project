@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Agricultural News - Farmer's Portal{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Agricultural News</h1>
+            <p class="text-gray-600">Latest farming news and updates from trusted sources</p>
+        </div>
+        
+        <!-- Scrape Button -->
+        <div class="text-center mb-8">
+            <button id="scrape-news-btn" class="btn-primary text-white px-6 py-2 rounded-lg font-semibold">
+                <span id="scrape-text">Refresh News</span>
+                <span id="scrape-loading" class="hidden">Scraping...</span>
+            </button>
+        </div>
+        
+        <!-- News Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% if news %}
+                {% for article in news %}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                    {% if article['image_url'] %}
+                    <img src="{{ article['image_url'] }}" alt="{{ article['headline'] }}" class="w-full h-48 object-cover">
+                    {% else %}
+                    <div class="w-full h-48 bg-gradient-to-r from-green-400 to-blue-500"></div>
+                    {% endif %}
+                    
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-green-600 font-semibold">{{ article['source'] }}</span>
+                            <span class="text-sm text-gray-500">{{ article['published_date'] }}</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-semibold text-gray-800 mb-3 line-clamp-2">
+                            {{ article['headline'] }}
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4 line-clamp-3">
+                            {{ article['summary'] or 'Click to read more...' }}
+                        </p>
+                        
+                        <a href="{{ article['url'] }}" target="_blank" class="text-green-600 hover:text-green-700 font-semibold">
+                            Read Full Article →
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-500 text-lg">No news articles found. Click "Refresh News" to scrape latest news.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="flex justify-center mt-12 space-x-2">
+            {% if page > 1 %}
+            <a href="/news?page={{ page - 1 }}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Previous</a>
+            {% endif %}
+            
+            {% for p in range(1, total_pages + 1) %}
+                {% if p == page %}
+                <span class="px-4 py-2 bg-green-600 text-white rounded-lg">{{ p }}</span>
+                {% else %}
+                <a href="/news?page={{ p }}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">{{ p }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page < total_pages %}
+            <a href="/news?page={{ page + 1 }}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/news_display.js') }}"></script>
+{% endblock %}
