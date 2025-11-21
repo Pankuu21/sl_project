@@ -60,40 +60,54 @@ def news():
                          page=page, 
                          total_pages=total_pages)
 
+# app.py - MODIFIED /products route with search
+
 @app.route('/products')
 def products():
-    """Products catalog page"""
+    """Display products with search, filter, and pagination"""
+    # Get parameters
+    search = request.args.get('search', '').strip()
     product_type = request.args.get('type', 'pesticides')
     page = request.args.get('page', 1, type=int)
     per_page = Config.PRODUCTS_PER_PAGE
     
     conn = get_db_connection()
     
-    if product_type == 'pesticides':
-        table = 'pesticide_products'
-    else:
-        table = 'equipment_products'
+    # Select table based on type
+    table = 'pesticide_products' if product_type == 'pesticides' else 'equipment_products'
     
-    # Get total count
-    total = conn.execute(f'SELECT COUNT(*) FROM {table}').fetchone()[0]
+    # Build query with search filter
+    query = f"SELECT * FROM {table}"
+    count_query = f"SELECT COUNT(*) FROM {table}"
+    params = []
     
-    # Get paginated products
-    offset = (page - 1) * per_page
-    products_list = conn.execute(f'''
-        SELECT * FROM {table} 
-        ORDER BY scraped_at DESC 
-        LIMIT ? OFFSET ?
-    ''', (per_page, offset)).fetchall()
+    if search:
+        search_condition = " WHERE name LIKE ? OR description LIKE ? OR category LIKE ?"
+        query += search_condition
+        count_query += search_condition
+        search_param = f"%{search}%"
+        params = [search_param, search_param, search_param]
     
-    conn.close()
-    
+    # Get total count for pagination
+    total = conn.execute(count_query, params).fetchone()[0]
     total_pages = (total + per_page - 1) // per_page
     
-    return render_template('products.html', 
-                         products=products_list,
-                         product_type=product_type,
-                         page=page, 
-                         total_pages=total_pages)
+    # Add ordering and pagination
+    query += " ORDER BY scraped_at DESC LIMIT ? OFFSET ?"
+    params.extend([per_page, (page - 1) * per_page])
+    
+    products_list = conn.execute(query, params).fetchall()
+    conn.close()
+    
+    return render_template(
+        'products.html',
+        products=products_list,
+        product_type=product_type,
+        page=page,
+        total_pages=total_pages,
+        search=search  # Pass search term to template
+    )
+
 
 @app.route('/analytics')
 def analytics():
