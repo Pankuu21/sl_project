@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify ,flash ,redirect ,url_for
 from flask_cors import CORS
 import sqlite3
 from datetime import datetime
@@ -62,37 +62,40 @@ def news():
 
 # app.py - MODIFIED /products route with search
 
-@app.route('/products')
-def products():
-    """Display products with search, filter, and pagination"""
-    # Get parameters
-    search = request.args.get('search', '').strip()
-    product_type = request.args.get('type', 'pesticides')
+# ============= NEW: DYNAMIC SEARCH ROUTE =============
+@app.route('/search-products', methods=['GET', 'POST'])
+def search_products():
+    """Dynamic product search across all sources"""
+    if request.method == 'POST':
+        keyword = request.form.get('keyword', '').strip()
+        if keyword:
+            try:
+                from scraping.multi_source_scraper import scrape_by_keyword
+                count = scrape_by_keyword(keyword, max_per_source=15)
+                flash(f'Successfully scraped {count} products for "{keyword}"', 'success')
+            except Exception as e:
+                flash(f'Error: {str(e)}', 'error')
+        return redirect(url_for('search_products', keyword=keyword))
+    
+    # GET request - display results
+    keyword = request.args.get('keyword', '').strip()
     page = request.args.get('page', 1, type=int)
-    per_page = Config.PRODUCTS_PER_PAGE
+    per_page = 12
     
     conn = get_db_connection()
     
-    # Select table based on type
-    table = 'pesticide_products' if product_type == 'pesticides' else 'equipment_products'
+    if keyword:
+        query = "SELECT * FROM search_products WHERE keyword = ?"
+        count_query = "SELECT COUNT(*) FROM search_products WHERE keyword = ?"
+        params = [keyword]
+    else:
+        query = "SELECT * FROM search_products"
+        count_query = "SELECT COUNT(*) FROM search_products"
+        params = []
     
-    # Build query with search filter
-    query = f"SELECT * FROM {table}"
-    count_query = f"SELECT COUNT(*) FROM {table}"
-    params = []
-    
-    if search:
-        search_condition = " WHERE name LIKE ? OR description LIKE ? OR category LIKE ?"
-        query += search_condition
-        count_query += search_condition
-        search_param = f"%{search}%"
-        params = [search_param, search_param, search_param]
-    
-    # Get total count for pagination
     total = conn.execute(count_query, params).fetchone()[0]
     total_pages = (total + per_page - 1) // per_page
     
-    # Add ordering and pagination
     query += " ORDER BY scraped_at DESC LIMIT ? OFFSET ?"
     params.extend([per_page, (page - 1) * per_page])
     
@@ -100,12 +103,11 @@ def products():
     conn.close()
     
     return render_template(
-        'products.html',
+        'search_products.html',
         products=products_list,
-        product_type=product_type,
+        keyword=keyword,
         page=page,
-        total_pages=total_pages,
-        search=search  # Pass search term to template
+        total_pages=total_pages
     )
 
 

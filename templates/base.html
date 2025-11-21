@@ -11,6 +11,9 @@
     <!-- Plotly for charts -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Custom CSS -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -73,6 +76,12 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Active navigation link */
+        .nav-active {
+            color: #16a34a;
+            font-weight: 600;
+        }
     </style>
     
     {% block extra_css %}{% endblock %}
@@ -93,11 +102,24 @@
                 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex space-x-6">
-                    <a href="/" class="text-gray-700 hover:text-green-600 transition">Home</a>
-                    <a href="/crop-recommendation" class="text-gray-700 hover:text-green-600 transition">Crop Recommendation</a>
-                    <a href="/news" class="text-gray-700 hover:text-green-600 transition">News</a>
-                    <a href="/products?type=pesticides" class="text-gray-700 hover:text-green-600 transition">Products</a>
-                    <a href="/analytics" class="text-gray-700 hover:text-green-600 transition">Analytics</a>
+                    <a href="/" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="/crop-recommendation" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
+                        <i class="fas fa-seedling"></i> Crop Recommendation
+                    </a>
+                    <a href="/news" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
+                        <i class="fas fa-newspaper"></i> News
+                    </a>
+                    <a href="/products?type=pesticides" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
+                        <i class="fas fa-shopping-cart"></i> Products
+                    </a>
+                    <a href="/search-products" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
+                        <i class="fas fa-search"></i> Search Products
+                    </a>
+                    <a href="/analytics" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
+                        <i class="fas fa-chart-line"></i> Analytics
+                    </a>
                 </div>
                 
                 <!-- Mobile Menu Button -->
@@ -110,11 +132,24 @@
             
             <!-- Mobile Navigation -->
             <div id="mobile-menu" class="hidden md:hidden pb-4">
-                <a href="/" class="block py-2 text-gray-700 hover:text-green-600">Home</a>
-                <a href="/crop-recommendation" class="block py-2 text-gray-700 hover:text-green-600">Crop Recommendation</a>
-                <a href="/news" class="block py-2 text-gray-700 hover:text-green-600">News</a>
-                <a href="/products?type=pesticides" class="block py-2 text-gray-700 hover:text-green-600">Products</a>
-                <a href="/analytics" class="block py-2 text-gray-700 hover:text-green-600">Analytics</a>
+                <a href="/" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="/crop-recommendation" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
+                    <i class="fas fa-seedling"></i> Crop Recommendation
+                </a>
+                <a href="/news" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
+                    <i class="fas fa-newspaper"></i> News
+                </a>
+                <a href="/products?type=pesticides" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
+                    <i class="fas fa-shopping-cart"></i> Products
+                </a>
+                <a href="/search-products" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
+                    <i class="fas fa-search"></i> Search Products
+                </a>
+                <a href="/analytics" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
             </div>
         </div>
     </nav>
@@ -135,20 +170,25 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
                     <ul class="space-y-2">
-                        <li><a href="/" class="text-gray-400 hover:text-white">Home</a></li>
-                        <li><a href="/crop-recommendation" class="text-gray-400 hover:text-white">Crop Recommendation</a></li>
-                        <li><a href="/news" class="text-gray-400 hover:text-white">News</a></li>
-                        <li><a href="/products?type=pesticides" class="text-gray-400 hover:text-white">Products</a></li>
+                        <li><a href="/" class="text-gray-400 hover:text-white transition">Home</a></li>
+                        <li><a href="/crop-recommendation" class="text-gray-400 hover:text-white transition">Crop Recommendation</a></li>
+                        <li><a href="/news" class="text-gray-400 hover:text-white transition">News</a></li>
+                        <li><a href="/products?type=pesticides" class="text-gray-400 hover:text-white transition">Products</a></li>
+                        <li><a href="/search-products" class="text-gray-400 hover:text-white transition">Search Products</a></li>
+                        <li><a href="/analytics" class="text-gray-400 hover:text-white transition">Analytics</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Contact</h3>
                     <p class="text-gray-400">IIT Bombay, Mumbai</p>
                     <p class="text-gray-400">MTech Computer Science</p>
+                    <p class="text-gray-400 mt-2">
+                        <i class="fas fa-envelope mr-2"></i>support@farmersportal.in
+                    </p>
                 </div>
             </div>
             <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2025 Farmer's Portal. All rights reserved.</p>
+                <p>&copy; 2025 Farmer's Portal. Built with ❤️ for Indian Farmers | IIT Bombay Project</p>
             </div>
         </div>
     </footer>
@@ -158,6 +198,28 @@
         document.getElementById('mobile-menu-btn').addEventListener('click', function() {
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('mobile-menu');
+            const button = document.getElementById('mobile-menu-btn');
+            
+            if (!menu.contains(event.target) && !button.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+        
+        // Highlight active page in navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('nav-active');
+                }
+            });
         });
     </script>
     
