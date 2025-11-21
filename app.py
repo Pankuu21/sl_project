@@ -65,20 +65,21 @@ def news():
 # ============= NEW: DYNAMIC SEARCH ROUTE =============
 @app.route('/search-products', methods=['GET', 'POST'])
 def search_products():
-    """Dynamic product search across all sources"""
+    """Dynamic product search with sorting"""
     if request.method == 'POST':
         keyword = request.form.get('keyword', '').strip()
         if keyword:
             try:
                 from scraping.multi_source_scraper import scrape_by_keyword
                 count = scrape_by_keyword(keyword, max_per_source=15)
-                flash(f'Successfully scraped {count} products for "{keyword}"', 'success')
+                flash(f'✅ Found {count} products for "{keyword}"', 'success')
             except Exception as e:
                 flash(f'Error: {str(e)}', 'error')
         return redirect(url_for('search_products', keyword=keyword))
     
     # GET request - display results
     keyword = request.args.get('keyword', '').strip()
+    sort_by = request.args.get('sort', 'newest')  # 'newest', 'low_to_high', 'high_to_low'
     page = request.args.get('page', 1, type=int)
     per_page = 12
     
@@ -93,10 +94,23 @@ def search_products():
         count_query = "SELECT COUNT(*) FROM search_products"
         params = []
     
+    # Get total count
     total = conn.execute(count_query, params).fetchone()[0]
-    total_pages = (total + per_page - 1) // per_page
+    total_pages = max(1, (total + per_page - 1) // per_page)
     
-    query += " ORDER BY scraped_at DESC LIMIT ? OFFSET ?"
+    # Add sorting logic
+    if sort_by == 'low_to_high':
+        # Sort by price ascending (extract numeric price)
+        query += " ORDER BY CAST(REPLACE(REPLACE(price, '₹', ''), ',', '') AS INTEGER) ASC"
+    elif sort_by == 'high_to_low':
+        # Sort by price descending
+        query += " ORDER BY CAST(REPLACE(REPLACE(price, '₹', ''), ',', '') AS INTEGER) DESC"
+    else:
+        # Default: newest first
+        query += " ORDER BY scraped_at DESC"
+    
+    # Add pagination
+    query += " LIMIT ? OFFSET ?"
     params.extend([per_page, (page - 1) * per_page])
     
     products_list = conn.execute(query, params).fetchall()
@@ -106,6 +120,7 @@ def search_products():
         'search_products.html',
         products=products_list,
         keyword=keyword,
+        sort_by=sort_by,
         page=page,
         total_pages=total_pages
     )
