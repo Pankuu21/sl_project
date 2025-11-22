@@ -1,8 +1,3 @@
-"""
-Government Agricultural Schemes Scraper
-Source: https://agriwelfare.gov.in/en/Major
-"""
-
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
@@ -25,21 +20,19 @@ HEADERS = {
 }
 
 def fetch_page():
-    """Fetch the schemes page"""
-    print(f"🌐 Fetching schemes from {PAGE}...")
+    print(f"Fetching schemes from {PAGE}...")
     r = requests.get(PAGE, headers=HEADERS, timeout=20)
     r.raise_for_status()
     return r.text
 
 def parse_schemes(html):
-    """Parse schemes from HTML"""
     soup = BeautifulSoup(html, "html.parser")
     
     table = soup.find("table", class_="testdatatable") or soup.find("table")
     schemes = []
     
     if not table:
-        print("⚠️  No table found on page. Page may be blocked or structure changed.")
+        print("No table found on page. Page may be blocked or structure changed.")
         return schemes
     
     for tr in table.find_all("tr"):
@@ -73,7 +66,6 @@ def parse_schemes(html):
     return schemes
 
 def ensure_schemes_table(db_path):
-    """Create schemes table if it doesn't exist"""
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
     cur.execute('''
@@ -90,7 +82,6 @@ def ensure_schemes_table(db_path):
     conn.close()
 
 def save_schemes_to_db(schemes, db_path):
-    """Save schemes to database"""
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
     inserted = 0
@@ -118,7 +109,7 @@ def save_schemes_to_db(schemes, db_path):
             else:
                 updated += 1
         except Exception as e:
-            print(f"  ✗ Error saving scheme: {e}")
+            print(f"Error saving scheme: {e}")
     
     conn.commit()
     conn.close()
@@ -134,7 +125,7 @@ def _get_db_path():
 def scrape_government_schemes():
     """Main function to scrape and save government schemes"""
     print("="*80)
-    print("🏛️  SCRAPING GOVERNMENT AGRICULTURAL SCHEMES")
+    print("SCRAPING GOVERNMENT AGRICULTURAL SCHEMES")
     print("="*80)
     
     db_path = _get_db_path()
@@ -146,29 +137,28 @@ def scrape_government_schemes():
         schemes = parse_schemes(html)
         
         if not schemes:
-            print("⚠️  No schemes found. Try running again or check website structure.")
+            print("No schemes found. Try running again or check website structure.")
             return 0
         
         print(f"\n✓ Parsed {len(schemes)} schemes")
         
-        # Show first 3 schemes
-        print("\n📋 Sample schemes:")
+        print("\nSample schemes:")
         for i, s in enumerate(schemes[:3], 1):
             print(f"\n  [{i}] {s['scheme']}")
-            print(f"      📅 Published: {s['publish_date']}")
-            print(f"      📄 Documents: {len(s['doc_links'])}")
-            print(f"      🔗 Apply links: {len(s['apply_links'])}")
+            print(f"Published: {s['publish_date']}")
+            print(f"Documents: {len(s['doc_links'])}")
+            print(f"Apply links: {len(s['apply_links'])}")
         
         inserted = save_schemes_to_db(schemes, db_path)
-        print(f"\n💾 Saved {inserted} schemes to database")
+        print(f"\nSaved {inserted} schemes to database")
         
         return len(schemes)
         
     except requests.exceptions.HTTPError as e:
-        print(f"❌ HTTP error: {e}")
+        print(f"HTTP error: {e}")
         return 0
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
         return 0
 
 if __name__ == "__main__":
