@@ -30,13 +30,27 @@ HEADERS = {
     "Connection": "keep-alive",
 }
 
-def download_and_parse_csv(date_str=None):
+def download_and_parse_csv(date_str=None, save_csv=True):
     if not date_str:
         date_str = datetime.now().strftime("%Y-%m-%d")
+    
     url = CSV_API_TEMPLATE.format(date=date_str)
+    print(f"🔗 Fetching CSV from: {url}")
+    
     resp = requests.get(url, headers=HEADERS, timeout=30)
     resp.raise_for_status()
     content = resp.content.decode("utf-8")
+    
+    # ✅ Save CSV locally (optional)
+    if save_csv:
+        csv_dir = Path("downloads")
+        csv_dir.mkdir(exist_ok=True)
+        file_path = csv_dir / f"agmarknet_prices_{date_str}.csv"
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"📁 Saved raw CSV: {file_path.resolve()}")
+    
+    # Continue parsing
     lines = content.splitlines()
     data_start = 0
     for i, line in enumerate(lines):
@@ -45,9 +59,11 @@ def download_and_parse_csv(date_str=None):
             break
     if data_start == 0:
         raise Exception("Header not found in CSV")
+
     reader = csv.DictReader(lines[data_start:])
     date_label = next((h for h in reader.fieldnames if "Price on" in h), None)
     arrival_label = next((h for h in reader.fieldnames if "Arrival on" in h), None)
+
     records = []
     for row in reader:
         if not row.get("Commodity"):
@@ -61,7 +77,10 @@ def download_and_parse_csv(date_str=None):
             "arrival": row.get(arrival_label, "").strip() if arrival_label else "",
             "date": date_str,
         })
+
+    print(f"✅ Parsed {len(records)} rows")
     return records
+
 
 def ensure_price_table(db_path):
     conn = sqlite3.connect(db_path)
