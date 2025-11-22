@@ -1,7 +1,3 @@
-"""
-Multi-source product scraper - Agriplex India and KisanShop
-Clears entire search_products table before each scrape
-"""
 
 import sqlite3
 from datetime import datetime, timezone
