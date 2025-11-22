@@ -1,152 +1,257 @@
-
-{% extends "base.html" %}
-
-{% block title %}Crop Recommendation - Farmer's Portal{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Crop Recommendation - Farmer's
+Portal{% endblock %} {% block content %}
 <section class="py-12 bg-gray-50">
-    <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto">
-            <!-- Header -->
-            <div class="text-center mb-8">
-                <h1 class="text-4xl font-bold text-gray-800 mb-4">Crop Recommendation System</h1>
-                <p class="text-gray-600">Enter your soil and environmental parameters to get AI-powered crop recommendations</p>
+  <div class="container mx-auto px-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">
+          Crop Recommendation System
+        </h1>
+        <p class="text-gray-600">
+          Enter your soil and environmental parameters to get AI-powered crop
+          recommendations
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Input Form -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <h2 class="text-2xl font-semibold mb-6 text-gray-800">
+            Soil & Environment Data
+          </h2>
+
+          <form id="crop-form">
+            <!-- Nitrogen -->
+            <div class="mb-4">
+              <label class="block text-gray-700 font-medium mb-2"
+                >Nitrogen (N)</label
+              >
+              <input
+                type="number"
+                id="nitrogen"
+                name="N"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="e.g., 90"
+                min="0"
+                required
+              />
+              <p class="text-sm text-gray-500 mt-1">
+                Ratio of Nitrogen content in soil
+              </p>
             </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Input Form -->
-                <div class="bg-white rounded-xl shadow-lg p-8">
-                    <h2 class="text-2xl font-semibold mb-6 text-gray-800">Soil & Environment Data</h2>
-                    
-                    <form id="crop-form">
-                        <!-- Nitrogen -->
-                        <div class="mb-4">
-                            <label class="block text-gray-700 font-medium mb-2">Nitrogen (N)</label>
-                            <input type="number" id="nitrogen" name="N" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" 
-                                   placeholder="e.g., 90" min="0" required>
-                            <p class="text-sm text-gray-500 mt-1">Ratio of Nitrogen content in soil</p>
-                        </div>
-                        
-                        <!-- Phosphorus -->
-                        <div class="mb-4">
-                            <label class="block text-gray-700 font-medium mb-2">Phosphorus (P)</label>
-                            <input type="number" id="phosphorus" name="P" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" 
-                                   placeholder="e.g., 42" min="0" required>
-                            <p class="text-sm text-gray-500 mt-1">Ratio of Phosphorus content in soil</p>
-                        </div>
-                        
-                        <!-- Potassium -->
-                        <div class="mb-4">
-                            <label class="block text-gray-700 font-medium mb-2">Potassium (K)</label>
-                            <input type="number" id="potassium" name="K" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" 
-                                   placeholder="e.g., 43" min="0" required>
-                            <p class="text-sm text-gray-500 mt-1">Ratio of Potassium content in soil</p>
-                        </div>
-                        
-                        <!-- Temperature -->
-                        <div class="mb-4">
-                            <label class="block text-gray-700 font-medium mb-2">Temperature (°C)</label>
-                            <input type="number" step="0.01" id="temperature" name="temperature" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" 
-                                   placeholder="e.g., 20.8" required>
-                            <p class="text-sm text-gray-500 mt-1">Temperature in Celsius</p>
-                        </div>
-                        
-                        <!-- Humidity -->
-                        <div class="mb-4">
-                            <label class="block text-gray-700 font-medium mb-2">Humidity (%)</label>
-                            <input type="number" step="0.01" id="humidity" name="humidity" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" 
-                                   placeholder="e.g., 82.0" min="0" max="100" required>
-                            <p class="text-sm text-gray-500 mt-1">Relative humidity percentage</p>
-                        </div>
-                        
-                        <!-- pH -->
-                        <div class="mb-4">
-                            <label class="block text-gray-700 font-medium mb-2">pH Value</label>
-                            <input type="number" step="0.01" id="ph" name="ph" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" 
-                                   placeholder="e.g., 6.5" min="0" max="14" required>
-                            <p class="text-sm text-gray-500 mt-1">pH value of soil (0-14)</p>
-                        </div>
-                        
-                        <!-- Rainfall -->
-                        <div class="mb-6">
-                            <label class="block text-gray-700 font-medium mb-2">Rainfall (mm)</label>
-                            <input type="number" step="0.01" id="rainfall" name="rainfall" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" 
-                                   placeholder="e.g., 202.9" min="0" required>
-                            <p class="text-sm text-gray-500 mt-1">Rainfall in millimeters</p>
-                        </div>
-                        
-                        <!-- Submit Button -->
-                        <button type="submit" class="w-full btn-success text-white py-3 rounded-lg font-semibold">
-                            Get Recommendation
-                        </button>
-                    </form>
-                </div>
-                
-                <!-- Result Display -->
-                <div class="bg-white rounded-xl shadow-lg p-8">
-                    <h2 class="text-2xl font-semibold mb-6 text-gray-800">Recommendation Result</h2>
-                    
-                    <!-- Loading State -->
-                    <div id="loading" class="hidden text-center py-12">
-                        <div class="loading mx-auto mb-4"></div>
-                        <p class="text-gray-600">Analyzing your data...</p>
-                    </div>
-                    
-                    <!-- Error State -->
-                    <div id="error" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                        <p class="text-red-700" id="error-message"></p>
-                    </div>
-                    
-                    <!-- Result State -->
-                    <div id="result" class="hidden">
-                        <div class="text-center mb-6">
-                            <img id="crop-image" src="" alt="Crop" class="w-full h-48 object-cover rounded-lg mb-4">
-                            <h3 class="text-3xl font-bold text-green-600 mb-2" id="crop-name"></h3>
-                            <div class="inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full">
-                                <span class="font-semibold" id="confidence"></span>% Confidence
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <div class="border-l-4 border-green-500 pl-4">
-                                <p class="text-sm text-gray-600">Season</p>
-                                <p class="font-semibold text-gray-800" id="season"></p>
-                            </div>
-                            
-                            <div class="border-l-4 border-blue-500 pl-4">
-                                <p class="text-sm text-gray-600">Growth Duration</p>
-                                <p class="font-semibold text-gray-800" id="duration"></p>
-                            </div>
-                            
-                            <div class="border-l-4 border-purple-500 pl-4">
-                                <p class="text-sm text-gray-600">Cultivation Tips</p>
-                                <p class="font-semibold text-gray-800" id="tips"></p>
-                            </div>
-                        </div>
-                        
-                        <button onclick="window.location.reload()" class="w-full mt-6 bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition">
-                            Try Another Prediction
-                        </button>
-                    </div>
-                    
-                    <!-- Initial State -->
-                    <div id="initial-state" class="text-center py-12">
-                        <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <p class="text-gray-500">Fill in the form to get crop recommendations</p>
-                    </div>
-                </div>
+
+            <!-- Phosphorus -->
+            <div class="mb-4">
+              <label class="block text-gray-700 font-medium mb-2"
+                >Phosphorus (P)</label
+              >
+              <input
+                type="number"
+                id="phosphorus"
+                name="P"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="e.g., 42"
+                min="0"
+                required
+              />
+              <p class="text-sm text-gray-500 mt-1">
+                Ratio of Phosphorus content in soil
+              </p>
             </div>
+
+            <!-- Potassium -->
+            <div class="mb-4">
+              <label class="block text-gray-700 font-medium mb-2"
+                >Potassium (K)</label
+              >
+              <input
+                type="number"
+                id="potassium"
+                name="K"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="e.g., 43"
+                min="0"
+                required
+              />
+              <p class="text-sm text-gray-500 mt-1">
+                Ratio of Potassium content in soil
+              </p>
+            </div>
+
+            <!-- Temperature -->
+            <div class="mb-4">
+              <label class="block text-gray-700 font-medium mb-2"
+                >Temperature (°C)</label
+              >
+              <input
+                type="number"
+                step="0.01"
+                id="temperature"
+                name="temperature"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="e.g., 20.8"
+                required
+              />
+              <p class="text-sm text-gray-500 mt-1">Temperature in Celsius</p>
+            </div>
+
+            <!-- Humidity -->
+            <div class="mb-4">
+              <label class="block text-gray-700 font-medium mb-2"
+                >Humidity (%)</label
+              >
+              <input
+                type="number"
+                step="0.01"
+                id="humidity"
+                name="humidity"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="e.g., 82.0"
+                min="0"
+                max="100"
+                required
+              />
+              <p class="text-sm text-gray-500 mt-1">
+                Relative humidity percentage
+              </p>
+            </div>
+
+            <!-- pH -->
+            <div class="mb-4">
+              <label class="block text-gray-700 font-medium mb-2"
+                >pH Value</label
+              >
+              <input
+                type="number"
+                step="0.01"
+                id="ph"
+                name="ph"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="e.g., 6.5"
+                min="0"
+                max="14"
+                required
+              />
+              <p class="text-sm text-gray-500 mt-1">pH value of soil (0-14)</p>
+            </div>
+
+            <!-- Rainfall -->
+            <div class="mb-6">
+              <label class="block text-gray-700 font-medium mb-2"
+                >Rainfall (mm)</label
+              >
+              <input
+                type="number"
+                step="0.01"
+                id="rainfall"
+                name="rainfall"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="e.g., 202.9"
+                min="0"
+                required
+              />
+              <p class="text-sm text-gray-500 mt-1">Rainfall in millimeters</p>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              class="w-full btn-success text-white py-3 rounded-lg font-semibold bg-green-500"
+            >
+              Get Recommendation
+            </button>
+          </form>
         </div>
+
+        <!-- Result Display -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <h2 class="text-2xl font-semibold mb-6 text-gray-800">
+            Recommendation Result
+          </h2>
+
+          <!-- Loading State -->
+          <div id="loading" class="hidden text-center py-12">
+            <div class="loading mx-auto mb-4"></div>
+            <p class="text-gray-600">Analyzing your data...</p>
+          </div>
+
+          <!-- Error State -->
+          <div
+            id="error"
+            class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mb-4"
+          >
+            <p class="text-red-700" id="error-message"></p>
+          </div>
+
+          <!-- Result State -->
+          <div id="result" class="hidden">
+            <div class="text-center mb-6">
+              <img
+                id="crop-image"
+                src=""
+                alt="Crop"
+                class="w-full h-48 object-cover rounded-lg mb-4"
+              />
+              <h3
+                class="text-3xl font-bold text-green-600 mb-2"
+                id="crop-name"
+              ></h3>
+              <div
+                class="inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full"
+              >
+                <span class="font-semibold" id="confidence"></span>% Confidence
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="border-l-4 border-green-500 pl-4">
+                <p class="text-sm text-gray-600">Season</p>
+                <p class="font-semibold text-gray-800" id="season"></p>
+              </div>
+
+              <div class="border-l-4 border-blue-500 pl-4">
+                <p class="text-sm text-gray-600">Growth Duration</p>
+                <p class="font-semibold text-gray-800" id="duration"></p>
+              </div>
+
+              <div class="border-l-4 border-purple-500 pl-4">
+                <p class="text-sm text-gray-600">Cultivation Tips</p>
+                <p class="font-semibold text-gray-800" id="tips"></p>
+              </div>
+            </div>
+
+            <button
+              onclick="window.location.reload()"
+              class="w-full mt-6 bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition"
+            >
+              Try Another Prediction
+            </button>
+          </div>
+
+          <!-- Initial State -->
+          <div id="initial-state" class="text-center py-12">
+            <svg
+              class="w-24 h-24 mx-auto text-gray-300 mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
+            </svg>
+            <p class="text-gray-500">
+              Fill in the form to get crop recommendations
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
 <script src="{{ url_for('static', filename='js/crop_recommendation.js') }}"></script>
