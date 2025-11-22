@@ -23,14 +23,12 @@ except:
     def clean_text(s):
         return " ".join(s.split()) if s else ""
 
-# Common headers
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9"
 }
 
-# Blacklist terms
 BLACKLIST = ["new arrivals", "categories", "top brands", "featured", "popular products", "best sellers", "shop now", "view all"]
 
 def normalize_url(url, base):
@@ -80,30 +78,27 @@ def print_product_details(products, source_name):
         return
     
     print(f"\n{'='*100}")
-    print(f"📦 {source_name} - Detailed Results ({len(products)} products)")
+    print(f"{source_name} - Detailed Results ({len(products)} products)")
     print("="*100)
     
     for idx, p in enumerate(products, 1):
         print(f"\n[{idx}] {p['name'][:80]}")
-        print(f"    💰 Price: {p['price']}")
-        print(f"    🖼️  Image: {p['image_url'][:80] if p['image_url'] else 'No image'}...")
-        print(f"    🔗 Link:  {p['product_url'][:80] if p['product_url'] else 'No link'}...")
+        print(f"Price: {p['price']}")
+        print(f"Image: {p['image_url'][:80] if p['image_url'] else 'No image'}...")
+        print(f"Link:  {p['product_url'][:80] if p['product_url'] else 'No link'}...")
     
     print(f"\n{'='*100}\n")
 
-# ============= DATABASE CLEANUP FUNCTION =============
 def clear_search_products_table(db_path):
     """Delete ALL entries from search_products table"""
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
     try:
-        # Count existing entries
         cursor.execute("SELECT COUNT(*) FROM search_products")
         count = cursor.fetchone()[0]
         
         if count > 0:
-            # Delete all entries
             cursor.execute("DELETE FROM search_products")
             conn.commit()
             print(f"\n🧹 Cleared table: Deleted all {count} existing entries")
@@ -111,18 +106,17 @@ def clear_search_products_table(db_path):
             print(f"\n✓ Table already empty")
     
     except Exception as e:
-        print(f"  ⚠️  Cleanup error: {e}")
+        print(f"Cleanup error: {e}")
     
     finally:
         conn.close()
 
-# ============= AGRIPLEX SCRAPER =============
 def scrape_agriplex(keyword, max_items=30):
     """Scrape Agriplex India search results"""
     BASE = "https://agriplexindia.com"
     products = []
     
-    print(f"\n🌾 Scraping Agriplex for '{keyword}'...")
+    print(f"\nScraping Agriplex for '{keyword}'...")
     
     try:
         search_url = f"{BASE}/search?q={quote_plus(keyword)}"
@@ -159,21 +153,20 @@ def scrape_agriplex(keyword, max_items=30):
                 "category": "Agricultural Product"
             })
         
-        print(f"  ✓ Found {len(products)} products from Agriplex")
+        print(f"Found {len(products)} products from Agriplex")
         print_product_details(products, "Agriplex India")
         
     except Exception as e:
-        print(f"  ✗ Agriplex error: {e}")
+        print(f"Agriplex error: {e}")
     
     return products
 
-# ============= KISANSHOP SCRAPER =============
 def scrape_kisanshop(keyword, max_items=30):
     """Scrape KisanShop search results"""
     BASE = "https://www.kisanshop.in"
     products = []
     
-    print(f"\n🛒 Scraping KisanShop for '{keyword}'...")
+    print(f"\nScraping KisanShop for '{keyword}'...")
     
     try:
         search_url = f"{BASE}/search?query={quote_plus(keyword)}"
@@ -214,34 +207,31 @@ def scrape_kisanshop(keyword, max_items=30):
                 "category": "Agricultural Product"
             })
         
-        print(f"  ✓ Found {len(products)} products from KisanShop")
+        print(f"Found {len(products)} products from KisanShop")
         print_product_details(products, "KisanShop")
         
     except Exception as e:
-        print(f"  ✗ KisanShop error: {e}")
+        print(f"KisanShop error: {e}")
     
     return products
 
-# ============= UNIFIED SEARCH FUNCTION =============
 def search_all_sources(keyword, max_per_source=30):
     """Search all sources and combine results"""
     print("="*100)
-    print(f"🔍 SEARCHING ALL SOURCES FOR: '{keyword}'")
+    print(f"SEARCHING ALL SOURCES FOR: '{keyword}'")
     print("="*100)
     
     all_products = []
     
-    # Scrape both sources
     all_products.extend(scrape_agriplex(keyword, max_items=max_per_source))
     all_products.extend(scrape_kisanshop(keyword, max_items=max_per_source))
     
     print(f"\n{'='*100}")
-    print(f"✅ TOTAL: {len(all_products)} products from all sources")
+    print(f"TOTAL: {len(all_products)} products from all sources")
     print("="*100)
     
     return all_products
 
-# ============= DATABASE FUNCTIONS =============
 def ensure_table_exists(db_path):
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
@@ -290,7 +280,6 @@ def _get_db_path():
     except:
         return str(PROJECT_ROOT / "database" / "farmer_portal.db")
 
-# ============= PUBLIC API =============
 def scrape_by_keyword(keyword, max_per_source=30):
     """
     Main function: scrape all sources by keyword and save to DB
@@ -304,17 +293,14 @@ def scrape_by_keyword(keyword, max_per_source=30):
     Path(db_path).parent.mkdir(parents=True, exist_ok=True)
     ensure_table_exists(db_path)
     
-    # ========== CLEAR ENTIRE TABLE ==========
-    print("\n🧹 Clearing search_products table...")
+    print("\nClearing search_products table...")
     clear_search_products_table(db_path)
     
-    # ========== SCRAPE NEW PRODUCTS ==========
     products = search_all_sources(keyword, max_per_source)
     
-    # ========== SAVE TO DATABASE ==========
-    print(f"\n📊 Saving {len(products)} products to database...")
+    print(f"\nSaving {len(products)} products to database...")
     inserted = save_to_db(products, keyword, db_path)
-    print(f"✓ Inserted: {inserted} new products")
+    print(f"Inserted: {inserted} new products")
     
     return inserted
 
