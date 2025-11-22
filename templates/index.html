@@ -1,213 +1,314 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <!-- Hero Section -->
 <section class="agriculture-gradient text-white py-20">
-    <div class="container mx-auto px-4 text-center">
-        <h1 class="text-5xl font-bold mb-6">Welcome to Farmer's Portal</h1>
-        <p class="text-xl mb-8 max-w-2xl mx-auto">
-            AI-powered crop recommendations, latest agricultural news, and farming product catalogs - all in one place
-        </p>
-        <a href="/crop-recommendation" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold inline-block">
-            Get Crop Recommendation
-        </a>
-    </div>
+  <div class="container mx-auto px-4 text-center">
+    <h1 class="text-5xl font-bold mb-6">Welcome to Farmer's Portal</h1>
+    <p class="text-xl mb-8 max-w-2xl mx-auto">
+      AI-powered crop recommendations, latest agricultural news, and farming
+      product catalogs - all in one place
+    </p>
+    <a
+      href="/crop-recommendation"
+      class="btn-primary text-white px-8 py-3 rounded-lg font-semibold inline-block bg-green-700"
+    >
+      Get Crop Recommendation
+    </a>
+  </div>
 </section>
 
 <!-- Weather Widget Section -->
 <section class="py-8 bg-gradient-to-br from-blue-50 to-green-50">
-    <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto">
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 flex justify-between items-center">
-                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                        <i class="fas fa-cloud-sun"></i>
-                        Today's Weather
-                    </h3>
-                    <input 
-                        type="text" 
-                        id="city-input" 
-                        placeholder="Enter city..."
-                        class="px-4 py-2 rounded-lg text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white"
-                        onkeypress="if(event.key==='Enter') updateWeather()"
-                    >
-                </div>
-                
-                <div id="weather-content" class="p-6">
-                    <div class="flex justify-center items-center py-8">
-                        <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
-                    </div>
-                </div>
-            </div>
+  <div class="container mx-auto px-4">
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div
+          class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 flex justify-between items-center"
+        >
+          <h3 class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="fas fa-cloud-sun"></i>
+            Today's Weather
+          </h3>
+          <input
+            type="text"
+            id="city-input"
+            placeholder="Enter city..."
+            class="px-4 py-2 rounded-lg text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white"
+            onkeypress="if(event.key==='Enter') updateWeather()"
+          />
         </div>
+
+        <div id="weather-content" class="p-6">
+          <div class="flex justify-center items-center py-8">
+            <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
 <!-- Features Section -->
 <section class="py-16">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Our Features</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Feature 1 -->
-            <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold mb-2">Crop Recommendation</h3>
-                <p class="text-gray-600">ML-based recommendations using soil and environmental data</p>
-                <a href="/crop-recommendation" class="text-green-600 hover:underline mt-4 inline-block">Learn more →</a>
-            </div>
-            
-            <!-- Feature 2 -->
-            <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
-                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold mb-2">Agricultural News</h3>
-                <p class="text-gray-600">Latest farming news and government updates aggregated for you</p>
-                <a href="/news" class="text-blue-600 hover:underline mt-4 inline-block">Read news →</a>
-            </div>
-            
-            <!-- Feature 3 -->
-            <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
-                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold mb-2">Product Catalog</h3>
-                <p class="text-gray-600">Browse pesticides and farming equipment with prices</p>
-                <a href="/products?type=pesticides" class="text-purple-600 hover:underline mt-4 inline-block">Browse products →</a>
-            </div>
-            
-            <!-- Feature 4: Weather Link -->
-            <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
-                <div class="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center mb-4">
-                    <i class="fas fa-cloud-sun text-3xl text-sky-600"></i>
-                </div>
-                <h3 class="text-xl font-semibold mb-2">Weather Forecast</h3>
-                <p class="text-gray-600">Real-time weather and 7-day forecast for farming decisions</p>
-                <a href="/weather" class="text-sky-600 hover:underline mt-4 inline-block">View forecast →</a>
-            </div>
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">
+      Our Features
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <!-- Feature 1 -->
+      <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+        <div
+          class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4"
+        >
+          <svg
+            class="w-8 h-8 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            ></path>
+          </svg>
         </div>
+        <h3 class="text-xl font-semibold mb-2">Crop Recommendation</h3>
+        <p class="text-gray-600">
+          ML-based recommendations using soil and environmental data
+        </p>
+        <a
+          href="/crop-recommendation"
+          class="text-green-600 hover:underline mt-4 inline-block"
+          >Learn more →</a
+        >
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+        <div
+          class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4"
+        >
+          <svg
+            class="w-8 h-8 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+            ></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Agricultural News</h3>
+        <p class="text-gray-600">
+          Latest farming news and government updates aggregated for you
+        </p>
+        <a href="/news" class="text-blue-600 hover:underline mt-4 inline-block"
+          >Read news →</a
+        >
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+        <div
+          class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4"
+        >
+          <svg
+            class="w-8 h-8 text-purple-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+            ></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Product Catalog</h3>
+        <p class="text-gray-600">
+          Browse pesticides and farming equipment with prices
+        </p>
+        <a
+          href="/products?type=pesticides"
+          class="text-purple-600 hover:underline mt-4 inline-block"
+          >Browse products →</a
+        >
+      </div>
+
+      <!-- Feature 4: Weather Link -->
+      <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+        <div
+          class="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center mb-4"
+        >
+          <i class="fas fa-cloud-sun text-3xl text-sky-600"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Weather Forecast</h3>
+        <p class="text-gray-600">
+          Real-time weather and 7-day forecast for farming decisions
+        </p>
+        <a
+          href="/weather"
+          class="text-sky-600 hover:underline mt-4 inline-block"
+          >View forecast →</a
+        >
+      </div>
     </div>
+  </div>
 </section>
 
 <!-- Statistics Section -->
 <section class="bg-gradient-to-r from-green-500 to-green-700 text-white py-16">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
-                <h3 class="text-4xl font-bold mb-2">22+</h3>
-                <p class="text-lg">Crop Types Supported</p>
-            </div>
-            <div>
-                <h3 class="text-4xl font-bold mb-2">2200+</h3>
-                <p class="text-lg">Training Samples</p>
-            </div>
-            <div>
-                <h3 class="text-4xl font-bold mb-2">92%</h3>
-                <p class="text-lg">Model Accuracy</p>
-            </div>
-        </div>
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+      <div>
+        <h3 class="text-4xl font-bold mb-2">22+</h3>
+        <p class="text-lg">Crop Types Supported</p>
+      </div>
+      <div>
+        <h3 class="text-4xl font-bold mb-2">2200+</h3>
+        <p class="text-lg">Training Samples</p>
+      </div>
+      <div>
+        <h3 class="text-4xl font-bold mb-2">92%</h3>
+        <p class="text-lg">Model Accuracy</p>
+      </div>
     </div>
+  </div>
 </section>
 
 <!-- How It Works Section -->
 <section class="py-16">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">How It Works</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="text-center">
-                <div class="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">1</div>
-                <h3 class="text-xl font-semibold mb-2">Enter Soil Data</h3>
-                <p class="text-gray-600">Provide nitrogen, phosphorus, potassium levels and environmental conditions</p>
-            </div>
-            
-            <div class="text-center">
-                <div class="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">2</div>
-                <h3 class="text-xl font-semibold mb-2">AI Analysis</h3>
-                <p class="text-gray-600">Our machine learning model analyzes your data and predicts the best crop</p>
-            </div>
-            
-            <div class="text-center">
-                <div class="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">3</div>
-                <h3 class="text-xl font-semibold mb-2">Get Recommendations</h3>
-                <p class="text-gray-600">Receive crop suggestions with cultivation tips and confidence scores</p>
-            </div>
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">
+      How It Works
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="text-center">
+        <div
+          class="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4"
+        >
+          1
         </div>
+        <h3 class="text-xl font-semibold mb-2">Enter Soil Data</h3>
+        <p class="text-gray-600">
+          Provide nitrogen, phosphorus, potassium levels and environmental
+          conditions
+        </p>
+      </div>
+
+      <div class="text-center">
+        <div
+          class="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4"
+        >
+          2
+        </div>
+        <h3 class="text-xl font-semibold mb-2">AI Analysis</h3>
+        <p class="text-gray-600">
+          Our machine learning model analyzes your data and predicts the best
+          crop
+        </p>
+      </div>
+
+      <div class="text-center">
+        <div
+          class="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4"
+        >
+          3
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Get Recommendations</h3>
+        <p class="text-gray-600">
+          Receive crop suggestions with cultivation tips and confidence scores
+        </p>
+      </div>
     </div>
+  </div>
 </section>
 
 <!-- CTA Section -->
 <section class="gradient-bg text-white py-16">
-    <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold mb-4">Ready to Make Smarter Farming Decisions?</h2>
-        <p class="text-lg mb-8">Get personalized crop recommendations based on your farm's conditions</p>
-        <a href="/crop-recommendation" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold inline-block hover:bg-gray-100 transition">
-            Start Now
-        </a>
-    </div>
+  <div class="container mx-auto px-4 text-center">
+    <h2 class="text-3xl font-bold mb-4">
+      Ready to Make Smarter Farming Decisions?
+    </h2>
+    <p class="text-lg mb-8">
+      Get personalized crop recommendations based on your farm's conditions
+    </p>
+    <a
+      href="/crop-recommendation"
+      class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold inline-block hover:bg-gray-100 transition"
+    >
+      Start Now
+    </a>
+  </div>
 </section>
 
 <script>
-// Weather Widget JavaScript
-let currentCity = localStorage.getItem('weatherCity') || 'Mumbai';
+  // Weather Widget JavaScript
+  let currentCity = localStorage.getItem("weatherCity") || "Mumbai";
 
-function updateWeather() {
-    const input = document.getElementById('city-input');
+  function updateWeather() {
+    const input = document.getElementById("city-input");
     const city = input.value.trim() || currentCity;
-    
+
     if (!city) return;
-    
+
     // Save to localStorage
-    localStorage.setItem('weatherCity', city);
+    localStorage.setItem("weatherCity", city);
     currentCity = city;
-    input.value = '';
-    
+    input.value = "";
+
     // Show loading
-    document.getElementById('weather-content').innerHTML = `
+    document.getElementById("weather-content").innerHTML = `
         <div class="flex justify-center items-center py-8">
             <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
         </div>
     `;
-    
-    // Fetch weather
-    fetch('/api/weather/' + encodeURIComponent(city))
-        .then(r => r.json())
-        .then(data => {
-            if (data.current.success) {
-                displayWeather(data.current, data.forecast);
-            } else {
-                displayError(data.current.error);
-            }
-        })
-        .catch(err => {
-            displayError('Failed to fetch weather data');
-        });
-}
 
-function displayWeather(current, forecast) {
+    // Fetch weather
+    fetch("/api/weather/" + encodeURIComponent(city))
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.current.success) {
+          displayWeather(data.current, data.forecast);
+        } else {
+          displayError(data.current.error);
+        }
+      })
+      .catch((err) => {
+        displayError("Failed to fetch weather data");
+      });
+  }
+
+  function displayWeather(current, forecast) {
     const forecastDays = forecast.success ? forecast.forecast.slice(0, 3) : [];
-    
-    document.getElementById('weather-content').innerHTML = `
+
+    document.getElementById("weather-content").innerHTML = `
         <!-- Current Weather -->
         <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
             <div class="flex items-center gap-6">
                 <img 
-                    src="https://openweathermap.org/img/wn/${current.icon}@4x.png" 
+                    src="https://openweathermap.org/img/wn/${
+                      current.icon
+                    }@4x.png" 
                     alt="${current.description}"
                     class="w-24 h-24"
                 >
                 <div>
-                    <h4 class="text-3xl font-bold text-gray-800">${current.temperature}°C</h4>
-                    <p class="text-gray-600 text-lg">${current.city}, ${current.country}</p>
+                    <h4 class="text-3xl font-bold text-gray-800">${
+                      current.temperature
+                    }°C</h4>
+                    <p class="text-gray-600 text-lg">${current.city}, ${
+      current.country
+    }</p>
                     <p class="text-gray-500">${current.description}</p>
                 </div>
             </div>
@@ -216,35 +317,54 @@ function displayWeather(current, forecast) {
                 <div class="bg-blue-50 p-3 rounded-lg">
                     <i class="fas fa-tint text-blue-500 mb-1"></i>
                     <p class="text-sm text-gray-600">Humidity</p>
-                    <p class="text-xl font-bold text-gray-800">${current.humidity}%</p>
+                    <p class="text-xl font-bold text-gray-800">${
+                      current.humidity
+                    }%</p>
                 </div>
                 <div class="bg-green-50 p-3 rounded-lg">
                     <i class="fas fa-wind text-green-500 mb-1"></i>
                     <p class="text-sm text-gray-600">Wind</p>
-                    <p class="text-xl font-bold text-gray-800">${current.wind_speed} m/s</p>
+                    <p class="text-xl font-bold text-gray-800">${
+                      current.wind_speed
+                    } m/s</p>
                 </div>
             </div>
         </div>
         
         <!-- 3-Day Mini Forecast -->
-        ${forecastDays.length > 0 ? `
+        ${
+          forecastDays.length > 0
+            ? `
         <div class="border-t pt-4">
             <h5 class="text-sm font-semibold text-gray-600 mb-3">3-DAY FORECAST</h5>
             <div class="grid grid-cols-3 gap-3">
-                ${forecastDays.map(day => `
+                ${forecastDays
+                  .map(
+                    (day) => `
                     <div class="bg-gray-50 rounded-lg p-3 text-center">
-                        <p class="text-xs font-semibold text-gray-600 mb-1">${day.day.substring(0,3)}</p>
+                        <p class="text-xs font-semibold text-gray-600 mb-1">${day.day.substring(
+                          0,
+                          3
+                        )}</p>
                         <img 
-                            src="https://openweathermap.org/img/wn/${day.icon}@2x.png" 
+                            src="https://openweathermap.org/img/wn/${
+                              day.icon
+                            }@2x.png" 
                             class="w-12 h-12 mx-auto"
                         >
-                        <p class="text-lg font-bold text-gray-800">${day.temp_max}°</p>
+                        <p class="text-lg font-bold text-gray-800">${
+                          day.temp_max
+                        }°</p>
                         <p class="text-xs text-gray-500">${day.temp_min}°</p>
                     </div>
-                `).join('')}
+                `
+                  )
+                  .join("")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
         
         <div class="mt-4 text-center">
             <a href="/weather?city=${encodeURIComponent(currentCity)}" 
@@ -253,10 +373,10 @@ function displayWeather(current, forecast) {
             </a>
         </div>
     `;
-}
+  }
 
-function displayError(message) {
-    document.getElementById('weather-content').innerHTML = `
+  function displayError(message) {
+    document.getElementById("weather-content").innerHTML = `
         <div class="text-center py-8">
             <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-3"></i>
             <p class="text-gray-600">${message}</p>
@@ -268,12 +388,12 @@ function displayError(message) {
             </button>
         </div>
     `;
-}
+  }
 
-// Load weather on page load
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('city-input').value = '';
+  // Load weather on page load
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("city-input").value = "";
     updateWeather();
-});
+  });
 </script>
 {% endblock %}
