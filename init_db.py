@@ -88,6 +88,21 @@ def init_database():
             prediction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
+    cursor.execute('''
+CREATE TABLE IF NOT EXISTS search_products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    category TEXT,
+    price TEXT,
+    image_url TEXT,
+    product_url TEXT,
+    source TEXT,
+    keyword TEXT,
+    scraped_at TEXT,
+    UNIQUE(name, source)
+)
+''')
     
     conn.commit()
     print("✓ Database tables created successfully!")
