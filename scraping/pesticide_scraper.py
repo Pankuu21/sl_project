@@ -1,8 +1,3 @@
-"""
-AgriBegri scraper - REFINED VERSION
-Filters out navigation elements and improves price extraction
-"""
-
 import sqlite3
 from datetime import datetime, timezone
 import sys
@@ -50,7 +45,6 @@ except Exception:
 AGRIBEGRI_BASE = "https://www.agribegri.com"
 AGRIBEGRI_PEST_PAGE = AGRIBEGRI_BASE + "/products/pesticides.html"
 
-# Blacklist for filtering out non-product items
 BLACKLIST_NAMES = [
     "new arrivals", "categories", "top brands", "featured", 
     "popular products", "best sellers", "shop now", "view all"
@@ -72,17 +66,14 @@ def extract_img_from_tag(img_tag, base):
     return None
 
 def is_valid_product(name, price):
-    """Filter out navigation elements and invalid products"""
     if not name or len(name) < 5:
         return False
     
     name_lower = name.lower()
     
-    # Filter blacklisted terms
     if any(term in name_lower for term in BLACKLIST_NAMES):
         return False
     
-    # Must have at least one word with 4+ characters (not just "New" or "Top")
     words = name.split()
     has_substantial_word = any(len(w) >= 4 for w in words)
     if not has_substantial_word:
@@ -91,7 +82,6 @@ def is_valid_product(name, price):
     return True
 
 def parse_product_card(card_div):
-    """Parse product with better price extraction"""
     try:
         # Image
         img = card_div.find("img")
@@ -107,16 +97,13 @@ def parse_product_card(card_div):
         
         name = clean_text(name_tag.get_text())
         
-        # Product link
         link = None
         a_tag = card_div.find("a", href=True)
         if a_tag:
             link = normalize_url(a_tag.get("href"), AGRIBEGRI_BASE)
         
-        # Price extraction - IMPROVED
         price = None
         
-        # Strategy 1: Look for qty-price div with strong tag
         qty_price = card_div.find("div", class_="qty-price")
         if qty_price:
             strong = qty_price.find("strong")
@@ -124,7 +111,6 @@ def parse_product_card(card_div):
                 price_text = clean_text(strong.get_text())
                 price = extract_price(price_text)
         
-        # Strategy 2: Look for p.price-pdt strong
         if not price:
             price_p = card_div.find("p", class_=re.compile(r"price-pdt|price"))
             if price_p:
@@ -132,33 +118,26 @@ def parse_product_card(card_div):
                 if strong:
                     price = extract_price(clean_text(strong.get_text()))
         
-        # Strategy 3: Look for any element with "price" in class
         if not price:
             price_elem = card_div.find(class_=re.compile(r"price|amount"))
             if price_elem:
-                # Try to find the main price (not strikethrough)
                 strong = price_elem.find("strong")
                 if strong:
                     price = extract_price(clean_text(strong.get_text()))
                 else:
-                    # Get text but exclude <s> tags (old prices)
                     for s_tag in price_elem.find_all("s"):
                         s_tag.decompose()
                     price = extract_price(clean_text(price_elem.get_text()))
         
-        # Strategy 4: Search all text for price pattern (last resort)
         if not price:
             all_text = " ".join(card_div.stripped_strings)
-            # Find all prices and take the first one
             matches = re.findall(r'₹\s*[\d,]+', all_text)
             if matches:
                 price = matches[0].replace(" ", "")
         
-        # Validate product
         if not is_valid_product(name, price):
             return None
         
-        # Description
         description = ""
         desc_elem = card_div.find("p", class_=re.compile(r"desc|info|detail"))
         if desc_elem:
@@ -177,9 +156,8 @@ def parse_product_card(card_div):
         return None
 
 def scrape_agribegri_pesticides(max_pages=2, per_page_limit=None, delay=1.5):
-    """Scrape pesticides with filtering"""
     print("\n" + "="*70)
-    print("🌿 SCRAPING AGRIBEGRI PESTICIDES (FILTERED)")
+    print("SCRAPING AGRIBEGRI PESTICIDES (FILTERED)")
     print("="*70)
     
     products = []
@@ -187,14 +165,13 @@ def scrape_agribegri_pesticides(max_pages=2, per_page_limit=None, delay=1.5):
     
     while page <= max_pages:
         url = f"{AGRIBEGRI_PEST_PAGE}?page={page}"
-        print(f"\n📄 Page {page}: {url}")
+        print(f"\nPage {page}: {url}")
         
         soup = get_soup(url)
         if not soup:
-            print("  ✗ Failed to fetch")
+            print("Failed to fetch")
             break
         
-        # Find product cards
         cards = soup.find_all("div", class_=re.compile(r"item-effect-item"))
         
         if not cards:
@@ -218,26 +195,24 @@ def scrape_agribegri_pesticides(max_pages=2, per_page_limit=None, delay=1.5):
             if item:
                 products.append(item)
                 parsed += 1
-                print(f"  ✓ [{parsed}] {item['name'][:50]}")
-                print(f"          {item['price']}")
+                print(f"[{parsed}] {item['name'][:50]}")
+                print(f"{item['price']}")
                 
                 if per_page_limit and len(products) >= per_page_limit:
                     return products
             else:
                 skipped += 1
         
-        print(f"  → Parsed: {parsed}, Skipped: {skipped} (nav/duplicates)")
+        print(f"Parsed: {parsed}, Skipped: {skipped} (nav/duplicates)")
         
         page += 1
         if page <= max_pages:
             time.sleep(delay)
     
     print(f"\n{'='*70}")
-    print(f"✓ Total valid products: {len(products)}")
+    print(f"Total valid products: {len(products)}")
     print("="*70)
     return products
-
-# ============= Database Functions =============
 
 def ensure_tables_exist(db_path):
     conn = sqlite3.connect(db_path)
@@ -286,7 +261,7 @@ def insert_products_into_db(products, db_path, table='pesticide_products'):
             else:
                 duplicates += 1
         except Exception as e:
-            print(f"  ✗ Insert error: {e}")
+            print(f"Insert error: {e}")
     
     conn.commit()
     conn.close()
@@ -300,9 +275,7 @@ def export_csv(products, path="pesticide_products.csv"):
         writer = csv.DictWriter(f, fieldnames=keys)
         writer.writeheader()
         writer.writerows({k: p.get(k, "") for k in keys} for p in products)
-    print(f"✓ CSV saved: {path}")
-
-# ============= Public API =============
+    print(f"CSV saved: {path}")
 
 def _get_db_path():
     try:
@@ -325,7 +298,6 @@ def _fallback_products():
     ]
 
 def scrape_pesticides(sample_limit=None, delay=1.5):
-    """Main scraping function"""
     db_path = _get_db_path()
     Path(db_path).parent.mkdir(parents=True, exist_ok=True)
     ensure_tables_exist(db_path)
@@ -333,12 +305,12 @@ def scrape_pesticides(sample_limit=None, delay=1.5):
     products = scrape_agribegri_pesticides(max_pages=3, per_page_limit=sample_limit, delay=delay)
     
     if len(products) < 3:
-        print("\n⚠ Few products found, adding fallback...")
+        print("\nFew products found, adding fallback...")
         products.extend(_fallback_products())
     
-    print(f"\n📊 Inserting {len(products)} products...")
+    print(f"\nInserting {len(products)} products...")
     inserted, duplicates = insert_products_into_db(products, db_path)
-    print(f"✓ Inserted: {inserted}, Duplicates: {duplicates}")
+    print(f"Inserted: {inserted}, Duplicates: {duplicates}")
     
     try:
         export_csv(products)
@@ -348,7 +320,6 @@ def scrape_pesticides(sample_limit=None, delay=1.5):
     return int(inserted)
 
 def scrape_equipment(sample_limit=None, delay=1.0):
-    """Equipment scraping"""
     db_path = _get_db_path()
     Path(db_path).parent.mkdir(parents=True, exist_ok=True)
     ensure_tables_exist(db_path)
@@ -366,8 +337,8 @@ def scrape_equipment(sample_limit=None, delay=1.0):
     return int(inserted)
 
 if __name__ == "__main__":
-    print("🚀 Testing Refined AgriBegri Scraper\n")
+    print("Testing Refined AgriBegri Scraper\n")
     count = scrape_pesticides(sample_limit=50, delay=1.0)
     print(f"\n{'='*70}")
-    print(f"✅ COMPLETE! {count} products inserted")
+    print(f"COMPLETE! {count} products inserted")
     print("="*70)
