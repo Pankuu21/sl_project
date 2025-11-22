@@ -31,6 +31,11 @@ class Config:
     
     # Scheduler (for auto-scraping)
     SCRAPING_INTERVAL_HOURS = 6
+
+    # Weather API
+    OPENWEATHER_API_KEY = "dcdee92ea032b014d62ed8abdb24415e"
+    # ← Add your key
+    OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5"
     
     # Crop information
     CROP_INFO = {

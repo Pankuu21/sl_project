@@ -103,6 +103,34 @@ CREATE TABLE IF NOT EXISTS search_products (
     UNIQUE(name, source)
 )
 ''')
+
+    cursor.execute('''
+CREATE TABLE IF NOT EXISTS government_schemes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    scheme_name TEXT UNIQUE,
+    publish_date TEXT,
+    doc_links TEXT,
+    apply_links TEXT,
+    scraped_at TEXT
+)
+''')
+
+    cursor.execute('''
+CREATE TABLE IF NOT EXISTS agmarknet_prices (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    commodity_group TEXT,
+    commodity TEXT,
+    variety TEXT,
+    msp TEXT,
+    price TEXT,
+    arrival TEXT,
+    date TEXT,
+    scraped_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(commodity, variety, date)
+)
+''')
+
+
     
     conn.commit()
     print("✓ Database tables created successfully!")

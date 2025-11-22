@@ -1,68 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Farmer's Portal - Smart Agriculture Platform{% endblock %}</title>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Plotly for charts -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    
+
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Custom CSS -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
+
         body {
             font-family: 'Inter', sans-serif;
         }
-        
+
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
+
         .agriculture-gradient {
             background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
         }
-        
+
         .card-hover {
             transition: all 0.3s ease;
         }
-        
+
         .card-hover:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             transition: all 0.3s ease;
         }
-        
+
         .btn-primary:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        
+
         .btn-success {
             background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
             transition: all 0.3s ease;
         }
-        
+
         .btn-success:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 15px rgba(86, 171, 47, 0.4);
         }
-        
+
         .navbar-shadow {
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .loading {
             border: 3px solid #f3f3f3;
             border-top: 3px solid #667eea;
@@ -71,23 +72,29 @@
             height: 40px;
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         /* Active navigation link */
         .nav-active {
             color: #16a34a;
             font-weight: 600;
         }
     </style>
-    
+
     {% block extra_css %}{% endblock %}
 </head>
+
 <body class="bg-gray-50">
-    
+
     <!-- Navigation Bar -->
     <nav class="bg-white navbar-shadow sticky top-0 z-50">
         <div class="container mx-auto px-4">
@@ -95,56 +102,73 @@
                 <!-- Logo -->
                 <a href="/" class="flex items-center space-x-2">
                     <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
                     </svg>
                     <span class="text-xl font-bold text-gray-800">Farmer's Portal</span>
                 </a>
-                
+
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex space-x-6">
                     <a href="/" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
                         <i class="fas fa-home"></i> Home
                     </a>
-                    <a href="/crop-recommendation" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
+                    <a href="/crop-recommendation"
+                        class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
                         <i class="fas fa-seedling"></i> Crop Recommendation
                     </a>
                     <a href="/news" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
                         <i class="fas fa-newspaper"></i> News
                     </a>
-                    <a href="/products?type=pesticides" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
-                        <i class="fas fa-shopping-cart"></i> Products
+                    <a href="/market-prices" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
+    <i class="fas fa-chart-line"></i> Market Prices
+</a>
+
+
+                    <a href="/weather" class="text-gray-700 hover:text-blue-600 transition flex items-center gap-1">
+                        <i class="fas fa-cloud-sun"></i> Weather
                     </a>
-                    <a href="/search-products" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
+                    <a href="/search-products"
+                        class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
                         <i class="fas fa-search"></i> Search Products
                     </a>
                     <a href="/analytics" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
                         <i class="fas fa-chart-line"></i> Analytics
                     </a>
+                    <a href="/schemes" class="text-gray-700 hover:text-green-600 transition flex items-center gap-1">
+                        <i class="fas fa-landmark"></i> Schemes
+                    </a>
+
                 </div>
-                
+
                 <!-- Mobile Menu Button -->
                 <button id="mobile-menu-btn" class="md:hidden text-gray-700">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
             </div>
-            
+
             <!-- Mobile Navigation -->
             <div id="mobile-menu" class="hidden md:hidden pb-4">
                 <a href="/" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
                     <i class="fas fa-home"></i> Home
                 </a>
-                <a href="/crop-recommendation" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
+                <a href="/crop-recommendation"
+                    class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
                     <i class="fas fa-seedling"></i> Crop Recommendation
                 </a>
                 <a href="/news" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
                     <i class="fas fa-newspaper"></i> News
                 </a>
-                <a href="/products?type=pesticides" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
+                <a href="/products?type=pesticides"
+                    class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
                     <i class="fas fa-shopping-cart"></i> Products
                 </a>
-                <a href="/search-products" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
+                <a href="/search-products"
+                    class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
                     <i class="fas fa-search"></i> Search Products
                 </a>
                 <a href="/analytics" class="block py-2 text-gray-700 hover:text-green-600 flex items-center gap-2">
@@ -153,12 +177,12 @@
             </div>
         </div>
     </nav>
-    
+
     <!-- Main Content -->
     <main>
         {% block content %}{% endblock %}
     </main>
-    
+
     <!-- Footer -->
     <footer class="bg-gray-800 text-white mt-16">
         <div class="container mx-auto px-4 py-8">
@@ -171,10 +195,13 @@
                     <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
                     <ul class="space-y-2">
                         <li><a href="/" class="text-gray-400 hover:text-white transition">Home</a></li>
-                        <li><a href="/crop-recommendation" class="text-gray-400 hover:text-white transition">Crop Recommendation</a></li>
+                        <li><a href="/crop-recommendation" class="text-gray-400 hover:text-white transition">Crop
+                                Recommendation</a></li>
                         <li><a href="/news" class="text-gray-400 hover:text-white transition">News</a></li>
-                        <li><a href="/products?type=pesticides" class="text-gray-400 hover:text-white transition">Products</a></li>
-                        <li><a href="/search-products" class="text-gray-400 hover:text-white transition">Search Products</a></li>
+                        <li><a href="/products?type=pesticides"
+                                class="text-gray-400 hover:text-white transition">Products</a></li>
+                        <li><a href="/search-products" class="text-gray-400 hover:text-white transition">Search
+                                Products</a></li>
                         <li><a href="/analytics" class="text-gray-400 hover:text-white transition">Analytics</a></li>
                     </ul>
                 </div>
@@ -192,29 +219,29 @@
             </div>
         </div>
     </footer>
-    
+
     <!-- Mobile Menu Script -->
     <script>
-        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+        document.getElementById('mobile-menu-btn').addEventListener('click', function () {
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
         });
-        
+
         // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             const menu = document.getElementById('mobile-menu');
             const button = document.getElementById('mobile-menu-btn');
-            
+
             if (!menu.contains(event.target) && !button.contains(event.target)) {
                 menu.classList.add('hidden');
             }
         });
-        
+
         // Highlight active page in navigation
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('nav a');
-            
+
             navLinks.forEach(link => {
                 if (link.getAttribute('href') === currentPath) {
                     link.classList.add('nav-active');
@@ -222,7 +249,8 @@
             });
         });
     </script>
-    
+
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

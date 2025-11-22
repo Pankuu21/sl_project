@@ -240,29 +240,161 @@ def api_news():
     
     return jsonify([dict(row) for row in news_articles])
 
-@app.route('/api/products/<product_type>')
-def api_products(product_type):
-    """Get products API"""
-    limit = request.args.get('limit', 20, type=int)
+@app.route('/schemes')
+def schemes():
+    """Government schemes page"""
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
     
     conn = get_db_connection()
     
-    if product_type == 'pesticides':
-        table = 'pesticide_products'
-    elif product_type == 'equipment':
-        table = 'equipment_products'
-    else:
-        return jsonify({'error': 'Invalid product type'}), 400
+    total = conn.execute("SELECT COUNT(*) FROM government_schemes").fetchone()[0]
+    total_pages = max(1, (total + per_page - 1) // per_page)
     
-    products_list = conn.execute(f'''
-        SELECT * FROM {table} 
-        ORDER BY scraped_at DESC 
-        LIMIT ?
-    ''', (limit,)).fetchall()
+    schemes_list = conn.execute(
+        "SELECT * FROM government_schemes ORDER BY scraped_at DESC LIMIT ? OFFSET ?",
+        (per_page, (page - 1) * per_page)
+    ).fetchall()
     
     conn.close()
     
-    return jsonify([dict(row) for row in products_list])
+    return render_template(
+        'schemes.html',
+        schemes=schemes_list,
+        page=page,
+        total_pages=total_pages
+    )
+
+@app.route('/api/scrape/schemes', methods=['POST'])
+def scrape_schemes_api():
+    """Trigger schemes scraping"""
+    try:
+        from scraping.schemes_scraper import scrape_government_schemes
+        count = scrape_government_schemes()
+        return jsonify({'success': True, 'count': count})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/weather')
+def weather():
+    """Weather page"""
+    city = request.args.get('city', 'Mumbai')
+    
+    from services.weather_service import get_current_weather, get_forecast, get_weather_alerts
+    
+    current = get_current_weather(city)
+    forecast = get_forecast(city, days=7)
+    alerts = get_weather_alerts(current, forecast)
+    
+    return render_template(
+        'weather.html',
+        current=current,
+        forecast=forecast,
+        alerts=alerts,
+        city=city
+    )
+
+@app.route('/api/weather/<city>')
+def weather_api(city):
+    """Weather API endpoint"""
+    from services.weather_service import get_current_weather, get_forecast
+    
+    current = get_current_weather(city)
+    forecast = get_forecast(city, days=7)
+    
+    return jsonify({
+        "current": current,
+        "forecast": forecast
+    })
+@app.route('/prices')
+def crop_prices():
+    """Crop prices page"""
+    from services.agmarknet_prices import get_crop_prices, CROPS, MANDIS
+    
+    crop = request.args.get('crop', 'Tomato')
+    mandi = request.args.get('mandi', 'Delhi')
+    days = request.args.get('days', 7, type=int)
+    
+    if crop in CROPS and mandi in MANDIS:
+        prices = get_crop_prices(crop, mandi, days=days)
+    else:
+        prices = {"success": False, "error": "Invalid crop or mandi"}
+    
+    return render_template(
+        'prices.html',
+        prices=prices,
+        crops=list(CROPS.keys()),
+        mandis=list(MANDIS.keys()),
+        selected_crop=crop,
+        selected_mandi=mandi
+    )
+
+@app.route('/market-prices')
+def market_prices():
+    search = request.args.get('search', '').strip()
+    category = request.args.get('category', '').strip()
+    commodity = request.args.get('commodity', '').strip()
+    variety = request.args.get('variety', '').strip()
+    per_page = request.args.get('per_page', 100, type=int)
+    page = request.args.get('page', 1, type=int)
+
+    conn = get_db_connection()
+    conds, params = [], []
+    if search:
+        conds.append("commodity LIKE ?")
+        params.append('%' + search + '%')
+    if category:
+        conds.append("commodity_group = ?")
+        params.append(category)
+    if commodity:
+        conds.append("commodity = ?")
+        params.append(commodity)
+    if variety:
+        conds.append("variety = ?")
+        params.append(variety)
+
+    where = " WHERE " + " AND ".join(conds) if conds else ""
+    total = conn.execute(f"SELECT COUNT(*) FROM agmarknet_prices{where}", params).fetchone()[0]
+    total_pages = max(1, (total + per_page - 1) // per_page)
+
+    query = f"SELECT * FROM agmarknet_prices{where} ORDER BY date DESC, commodity ASC LIMIT ? OFFSET ?"
+    results = conn.execute(query, params + [per_page, (page - 1) * per_page]).fetchall()
+
+    categories = [r[0] for r in conn.execute("SELECT DISTINCT commodity_group FROM agmarknet_prices").fetchall()]
+    commodities = [r[0] for r in conn.execute("SELECT DISTINCT commodity FROM agmarknet_prices ORDER BY commodity ASC").fetchall()]
+    varieties = [r[0] for r in conn.execute("SELECT DISTINCT variety FROM agmarknet_prices ORDER BY variety ASC").fetchall()]
+    conn.close()
+
+    return render_template(
+        'market_prices.html',
+        prices=results,
+        search=search,
+        category=category,
+        categories=categories,
+        commodity=commodity,
+        commodities=commodities,
+        variety=variety,
+        varieties=varieties,
+        per_page=per_page,
+        page=page,
+        total_pages=total_pages
+    )
+
+
+
+@app.route('/api/scrape/prices', methods=['POST'])
+def scrape_prices_api():
+    try:
+        from services.agmarknet_csv_scraper import scrape_agmarknet_prices
+        count = scrape_agmarknet_prices()
+        return jsonify({'success': True, 'count': count})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+
+
 
 @app.route('/api/analytics/crop-distribution')
 def api_crop_distribution():

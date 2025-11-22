@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8 text-green-700">🌾 Agmarknet Marketwise Price & Arrival</h1>
+
+    <!-- Filter Form -->
+    <form method="get" action="/market-prices" class="mb-6 flex flex-wrap gap-2 items-center bg-green-50 p-4 rounded-lg shadow-sm">
+        <input type="text" name="search" value="{{ search or '' }}" placeholder="🔍 Search..." class="border px-3 py-2 rounded-md flex-1 min-w-[160px] focus:ring-2 focus:ring-green-400 focus:outline-none">
+        
+        <select name="category" class="border px-3 py-2 rounded-md focus:ring-2 focus:ring-green-400">
+            <option value="">All Categories</option>
+            {% for cat in categories %}
+                <option value="{{ cat }}" {% if cat == category %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="commodity" class="border px-3 py-2 rounded-md focus:ring-2 focus:ring-green-400">
+            <option value="">All Commodities</option>
+            {% for com in commodities %}
+                <option value="{{ com }}" {% if com == commodity %}selected{% endif %}>{{ com }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="variety" class="border px-3 py-2 rounded-md focus:ring-2 focus:ring-green-400">
+            <option value="">All Varieties</option>
+            {% for var in varieties %}
+                <option value="{{ var }}" {% if var == variety %}selected{% endif %}>{{ var }}</option>
+            {% endfor %}
+        </select>
+
+        <label class="ml-2 text-gray-700 font-medium">Results per page:</label>
+        <select name="per_page" class="border px-2 py-2 rounded-md focus:ring-2 focus:ring-green-400">
+            <option value="30" {% if per_page == 30 %}selected{% endif %}>30</option>
+            <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+            <option value="250" {% if per_page == 250 %}selected{% endif %}>250</option>
+            <option value="1000" {% if per_page == 1000 %}selected{% endif %}>1000</option>
+            <option value="10000" {% if per_page == 10000 %}selected{% endif %}>All</option>
+        </select>
+
+        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-md shadow transition ml-2">Filter</button>
+        {% if search or category or commodity or variety %}
+            <a href="/market-prices" class="ml-2 text-blue-600 underline">Clear</a>
+        {% endif %}
+        <button type="button" onclick="refreshPrices()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md shadow ml-auto transition">🔄 Refresh Prices</button>
+    </form>
+
+    <!-- Table Section -->
+    <div class="mt-4 overflow-x-auto rounded-lg shadow border border-gray-200">
+        <table class="min-w-full text-sm">
+            <thead class="bg-green-600 text-white text-left">
+                <tr>
+                    <th class="px-4 py-3 font-semibold uppercase tracking-wide">Category</th>
+                    <th class="px-4 py-3 font-semibold uppercase tracking-wide">Commodity</th>
+                    <th class="px-4 py-3 font-semibold uppercase tracking-wide">Variety</th>
+                    <th class="px-4 py-3 text-right font-semibold uppercase tracking-wide">MSP</th>
+                    <th class="px-4 py-3 text-right font-semibold uppercase tracking-wide">Price</th>
+                    <th class="px-4 py-3 text-right font-semibold uppercase tracking-wide">Arrival (MT)</th>
+                    <th class="px-4 py-3 text-center font-semibold uppercase tracking-wide">Date</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-100">
+            {% if prices %}
+                {% for price in prices %}
+                    <tr class="hover:bg-green-50 transition-colors">
+                        <td class="px-4 py-2 text-gray-800">{{ price.commodity_group }}</td>
+                        <td class="px-4 py-2 font-medium text-gray-900">{{ price.commodity }}</td>
+                        <td class="px-4 py-2 text-gray-700">{{ price.variety }}</td>
+                        <td class="px-4 py-2 text-right">
+                            <span class="inline-flex items-center rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                                {{ price.msp }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-2 text-right">
+                            <span class="inline-flex items-center rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                                {{ price.price }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-2 text-right text-gray-800">{{ price.arrival }}</td>
+                        <td class="px-4 py-2 text-center text-gray-700">{{ price.date }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="7" class="px-4 py-6 text-center text-gray-500">
+                        No records found. Try changing filters or refreshing prices.
+                    </td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="mt-5 flex flex-row items-center justify-center gap-2">
+        {% if page > 1 %}
+            <a href="{{ url_for('market_prices',
+                                search=search, category=category, commodity=commodity, variety=variety,
+                                per_page=per_page, page=page-1) }}"
+               class="px-4 py-2 border rounded bg-gray-100 hover:bg-green-100 transition">⬅ Prev</a>
+        {% endif %}
+        <span class="px-3 py-1 bg-green-50 border rounded text-gray-800 font-medium">
+            Page {{ page }} of {{ total_pages }}
+        </span>
+        {% if page < total_pages %}
+            <a href="{{ url_for('market_prices',
+                                search=search, category=category, commodity=commodity, variety=variety,
+                                per_page=per_page, page=page+1) }}"
+               class="px-4 py-2 border rounded bg-gray-100 hover:bg-green-100 transition">Next ➡</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Refresh Prices Script -->
+    <script>
+    function refreshPrices() {
+        const btn = event.target.closest('button');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Refreshing...';
+        fetch('/api/scrape/prices', {method:'POST'})
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alert("✅ Updated prices successfully!");
+                    location.reload();
+                } else {
+                    alert("❌ " + data.error);
+                    btn.disabled = false;
+                    btn.innerHTML = '🔄 Refresh Prices';
+                }
+            })
+            .catch(err => {
+                alert("⚠️ Error refreshing prices: " + err.message);
+                btn.disabled = false;
+                btn.innerHTML = '🔄 Refresh Prices';
+            });
+    }
+    </script>
+</div>
+{% endblock %}

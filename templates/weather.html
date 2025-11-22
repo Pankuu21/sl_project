@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Weather Forecast - Farmer's Portal{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Header with Search -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">
+            <i class="fas fa-cloud-sun"></i> Weather Forecast
+        </h1>
+        
+        <form method="get" action="/weather" class="flex gap-4 max-w-md">
+            <input 
+                type="text" 
+                name="city" 
+                value="{{ city }}"
+                placeholder="Enter city name..."
+                class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                required
+            >
+            <button 
+                type="submit" 
+                class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-semibold whitespace-nowrap"
+            >
+                <i class="fas fa-search mr-2"></i>Search
+            </button>
+        </form>
+    </div>
+    
+    {% if current.success %}
+    <!-- Alerts -->
+    {% if alerts %}
+    <div class="mb-6 space-y-3">
+        {% for alert in alerts %}
+        <div class="flex items-start gap-3 p-4 rounded-lg border 
+            {% if alert.type == 'danger' %}bg-red-50 border-red-200 text-red-800
+            {% elif alert.type == 'warning' %}bg-yellow-50 border-yellow-200 text-yellow-800
+            {% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %}">
+            <i class="fas {{ alert.icon }} text-xl mt-0.5"></i>
+            <div>
+                <h4 class="font-semibold mb-1">{{ alert.title }}</h4>
+                <p class="text-sm">{{ alert.message }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Current Weather Card -->
+    <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-2xl shadow-xl p-8 mb-6">
+        <div class="flex justify-between items-start">
+            <div>
+                <h2 class="text-4xl font-bold mb-2">{{ current.city }}, {{ current.country }}</h2>
+                <p class="text-blue-100 text-lg mb-6">{{ current.description }}</p>
+                
+                <div class="flex items-center gap-8">
+                    <div>
+                        <div class="text-7xl font-bold">{{ current.temperature }}°C</div>
+                        <div class="text-blue-100">Feels like {{ current.feels_like }}°C</div>
+                    </div>
+                    
+                    <img 
+                        src="https://openweathermap.org/img/wn/{{ current.icon }}@4x.png" 
+                        alt="{{ current.description }}"
+                        class="w-32 h-32"
+                    >
+                </div>
+            </div>
+        </div>
+        
+        <!-- Weather Details Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-6 border-t border-blue-400">
+            <div>
+                <div class="text-blue-100 text-sm mb-1">
+                    <i class="fas fa-tint mr-1"></i>Humidity
+                </div>
+                <div class="text-2xl font-semibold">{{ current.humidity }}%</div>
+            </div>
+            
+            <div>
+                <div class="text-blue-100 text-sm mb-1">
+                    <i class="fas fa-wind mr-1"></i>Wind Speed
+                </div>
+                <div class="text-2xl font-semibold">{{ current.wind_speed }} m/s</div>
+            </div>
+            
+            <div>
+                <div class="text-blue-100 text-sm mb-1">
+                    <i class="fas fa-compress-arrows-alt mr-1"></i>Pressure
+                </div>
+                <div class="text-2xl font-semibold">{{ current.pressure }} hPa</div>
+            </div>
+            
+            <div>
+                <div class="text-blue-100 text-sm mb-1">
+                    <i class="fas fa-eye mr-1"></i>Visibility
+                </div>
+                <div class="text-2xl font-semibold">{{ current.visibility }} km</div>
+            </div>
+        </div>
+        
+        <!-- Sun Times -->
+        <div class="flex gap-6 mt-6">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-sunrise text-yellow-300"></i>
+                <span>Sunrise: {{ current.sunrise }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fas fa-sunset text-orange-300"></i>
+                <span>Sunset: {{ current.sunset }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 7-Day Forecast -->
+    {% if forecast.success %}
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-2xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-calendar-week mr-2"></i>7-Day Forecast
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-7 gap-4">
+            {% for day in forecast.forecast %}
+            <div class="bg-gray-50 rounded-lg p-4 text-center hover:bg-gray-100 transition">
+                <div class="font-semibold text-gray-700 mb-2">{{ day.day[:3] }}</div>
+                <div class="text-sm text-gray-500 mb-3">{{ day.date[5:] }}</div>
+                
+                <img 
+                    src="https://openweathermap.org/img/wn/{{ day.icon }}@2x.png" 
+                    alt="{{ day.description }}"
+                    class="w-16 h-16 mx-auto"
+                >
+                
+                <div class="text-2xl font-bold text-gray-800 my-2">
+                    {{ day.temp_max }}°
+                </div>
+                <div class="text-sm text-gray-500 mb-3">
+                    {{ day.temp_min }}°
+                </div>
+                
+                <div class="text-xs text-gray-600 mb-2">{{ day.description }}</div>
+                
+                <div class="flex items-center justify-center gap-2 text-xs text-gray-500">
+                    <i class="fas fa-tint text-blue-500"></i>
+                    <span>{{ day.humidity_avg }}%</span>
+                </div>
+                
+                {% if day.rainfall > 0 %}
+                <div class="flex items-center justify-center gap-1 text-xs text-blue-600 mt-1">
+                    <i class="fas fa-cloud-rain"></i>
+                    <span>{{ day.rainfall }}mm</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <!-- Error State -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
+        <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
+        <h3 class="text-2xl font-semibold text-gray-700 mb-2">{{ current.error }}</h3>
+        <p class="text-gray-600">Please check the city name and try again</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
